@@ -1,7 +1,7 @@
 export const MYSQLCONFIG: any = {
   type: 'mysql', //数据库类型
   username: 'root', //账号
-  password: 'linzhe141', //密码
+  password: 'admin', //密码
   host: 'localhost', //host
   port: 3306,
   database: 'student-homework-manange-system', //库名

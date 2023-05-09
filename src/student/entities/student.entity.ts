@@ -1,24 +1,25 @@
-import { Student } from '@/student/entities/student.entity';
+import { User } from '@/user/entities/user.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Relation,
   OneToOne,
   JoinColumn,
 } from 'typeorm';
 
 @Entity()
-export class User {
+export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar' })
-  username: string;
+  studentNum: string;
 
   @Column({ type: 'varchar' })
-  password: string;
+  studentName: string;
 
   @CreateDateColumn()
   create_time: Date;
@@ -26,7 +27,7 @@ export class User {
   @UpdateDateColumn()
   update_time: Date;
 
-  @OneToOne(() => Student, (student) => student.user)
+  @OneToOne(() => User, (user) => user.student)
   @JoinColumn()
-  student: Student;
+  user: Relation<User>;
 }
