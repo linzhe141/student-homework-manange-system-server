@@ -12,14 +12,14 @@ export class User {
   id: number;
 
   @Column({ type: 'varchar' })
-  name: string;
+  username: string;
 
-  @Column({ type: 'int' })
-  age: number;
+  @Column({ type: 'varchar' })
+  password: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn()
   create_time: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn()
   update_time: Date;
 }

@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { initDoc } from './doc';
-import { VersioningType } from '@nestjs/common';
-import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
+import { VersioningType, ValidationPipe } from '@nestjs/common';
+import { BaseExceptionsFilter } from './common/exceptions/base.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,8 +15,8 @@ async function bootstrap() {
   });
   //全局前缀
   app.setGlobalPrefix('/api');
-  app.useGlobalFilters(new AllExceptionsFilter());
-
+  app.useGlobalFilters(new BaseExceptionsFilter());
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3010);
 }
 bootstrap();

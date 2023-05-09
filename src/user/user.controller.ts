@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  HttpException,
-  HttpStatus,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -19,32 +17,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      await this.userService.create(createUserDto);
-      return { success: true, message: '用户新增成功' };
-    } catch (e) {
-      throw new HttpException('用户新增失败', HttpStatus.BAD_REQUEST);
-    }
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
   @Get()
-  async findAll(@Query() query: { name: string; age: number }) {
-    try {
-      const data = await this.userService.findAll(query);
-      return { success: true, message: '', data };
-    } catch (e) {
-      throw new HttpException('用户查询失败', HttpStatus.BAD_REQUEST);
-    }
+  findAll(@Query() query: { username: string }) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const data = await this.userService.findOne(+id);
-    if (data) {
-      return data;
-    }
-    throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+  findOne(@Param('id') id: string) {
+    // +id 转为number
+    return this.userService.findOne(+id);
   }
 
   @Patch(':id')
