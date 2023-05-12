@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -28,7 +29,11 @@ export class StudentController {
   @ApiOperation({ summary: '查询' })
   @ApiQuery({ name: 'studentNum', description: '学号', required: false })
   @ApiQuery({ name: 'studentName', description: '姓名', required: false })
-  findAll(@Query() query: { studentNum: string; studentName: string }) {
+  findAll(
+    @Query('studentName') studentName: string,
+    @Query('studentNum') studentNum: string,
+  ) {
+    const query = { studentName, studentNum };
     return this.studentService.findAll(query);
   }
 

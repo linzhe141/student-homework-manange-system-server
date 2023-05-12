@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Student } from './entities/student.entity';
@@ -6,7 +6,10 @@ import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Result } from '@/common/resutl/result';
 import { User } from '@/user/entities/user.entity';
+import { UserType } from '../enum/user';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
+type QueryStudentDto = { studentNum: string; studentName: string };
 @Injectable()
 export class StudentService {
   constructor(
@@ -16,16 +19,22 @@ export class StudentService {
   async create(createStudentDto: CreateStudentDto) {
     return await this.student.manager.transaction(async () => {
       const { studentNum } = createStudentDto;
-      await this.user.save({
+      const isExist = await this.student.findOne({ where: { studentNum } });
+      if (isExist) {
+        throw new HttpException('学号不可重复', 400);
+      }
+      // ?TODO 只是为了有类型提示
+      await this.user.save<Partial<User>>({
         username: studentNum,
         password: studentNum,
+        type: UserType.STUDENT,
       });
       await this.student.save(createStudentDto);
       return new Result({ success: true, message: '学生新增成功' });
     });
   }
 
-  async findAll(query: { studentNum: string; studentName: string }) {
+  async findAll(query: QueryStudentDto) {
     const { studentNum = '', studentName = '' } = query;
     const data = await this.student.find({
       where: {

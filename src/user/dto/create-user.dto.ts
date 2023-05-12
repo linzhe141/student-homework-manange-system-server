@@ -1,5 +1,6 @@
+import { UserType } from '@/enum/user';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 export class CreateUserDto {
   @ApiProperty({ description: '用户名' })
   @IsString()
@@ -10,4 +11,15 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty({ message: '密码不能为空' })
   password: string;
+
+  @ApiProperty({ description: '类型 1学生', enum: UserType })
+  @IsEnum(UserType)
+  @IsNotEmpty({ message: '类型不能为空' })
+  type: number;
+
+  constructor({ usernaem, password, type }) {
+    this.username = usernaem;
+    this.password = password;
+    this.type = type;
+  }
 }

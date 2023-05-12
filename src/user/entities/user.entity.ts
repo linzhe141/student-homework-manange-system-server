@@ -20,6 +20,9 @@ export class User {
   @Column({ type: 'varchar' })
   password: string;
 
+  @Column({ type: 'int' })
+  type: number;
+
   @CreateDateColumn()
   create_time: Date;
 
