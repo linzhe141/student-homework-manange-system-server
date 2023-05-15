@@ -36,7 +36,7 @@ export class UserController {
   @ApiParam({ name: 'id', description: '用户id', required: true })
   findOne(@Param('id') id: string) {
     // +id 转为number
-    return this.userService.findOne(+id);
+    return this.userService.findOneById(+id);
   }
 
   @Patch(':id')

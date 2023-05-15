@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Like, Repository } from 'typeorm';
 import { Result } from '../common/resutl/result';
+import { LoginUserDto } from '../auth/dto/auth-user.dto';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,24 @@ export class UserService {
     @InjectRepository(User) private readonly user: Repository<User>,
   ) {}
 
+  // 认证使用
+  findOneByUserName(username: string) {
+    return this.user.findOne({ where: { username } });
+  }
+
+  async login({ username, password }: LoginUserDto) {
+    const isExist = await this.user.findOne({ where: { username, password } });
+    if (!isExist) {
+      throw new HttpException('用户名或密码错误', 400);
+    }
+    return new Result({ success: true, message: '登录成功' });
+  }
+
   async create({ username, password }: CreateUserDto) {
+    const isExist = await this.user.findOne({ where: { username } });
+    if (isExist) {
+      throw new HttpException('用户名不可重复', 400);
+    }
     await this.user.save({ username, password });
     return new Result({ success: true, message: '用户新增成功' });
   }
@@ -25,7 +43,7 @@ export class UserService {
     return new Result({ success: true, data, message: '' });
   }
 
-  async findOne(id: number) {
+  async findOneById(id: number) {
     const data = await this.user.findOne({ where: { id } });
     if (!data) {
       throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);

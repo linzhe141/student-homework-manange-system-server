@@ -16,10 +16,4 @@ export class CreateUserDto {
   @IsEnum(UserType)
   @IsNotEmpty({ message: '类型不能为空' })
   type: number;
-
-  constructor({ usernaem, password, type }) {
-    this.username = usernaem;
-    this.password = password;
-    this.type = type;
-  }
 }
