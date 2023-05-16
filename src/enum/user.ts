@@ -1,3 +1,4 @@
 export enum UserType {
-  STUDENT = 1,
+  ADMIN = 1,
+  STUDENT = 2,
 }

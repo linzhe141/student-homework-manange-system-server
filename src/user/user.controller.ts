@@ -11,9 +11,16 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('user')
+@ApiBearerAuth('access-token')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -40,12 +47,14 @@ export class UserController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '修改' })
   @ApiParam({ name: 'id', description: '用户id', required: true })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '删除' })
   @ApiParam({ name: 'id', description: '用户id', required: true })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);

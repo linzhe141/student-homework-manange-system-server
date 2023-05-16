@@ -18,9 +18,17 @@ export class StudentService {
   async create(createStudentDto: CreateStudentDto) {
     return await this.student.manager.transaction(async () => {
       const { studentNum, studentName } = createStudentDto;
-      const isExist = await this.student.findOne({ where: { studentNum } });
-      if (isExist) {
+      const isExistStudent = await this.student.findOne({
+        where: { studentNum },
+      });
+      if (isExistStudent) {
         throw new HttpException('学号不可重复', 400);
+      }
+      const isExistUser = await this.user.findOne({
+        where: { username: studentNum },
+      });
+      if (isExistUser) {
+        throw new HttpException('已存在该学号的用户', 400);
       }
       const user = new User();
       user.username = studentNum;
@@ -48,15 +56,36 @@ export class StudentService {
     return new Result({ success: true, data, message: '' });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(id: number) {
+    const student = await this.student.findOne({ where: { id } });
+    if (!student) {
+      throw new HttpException('该学生不存在', 400);
+    }
+    return new Result({ success: true, data: student, message: '' });
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+  async update(id: number, updateStudentDto: UpdateStudentDto) {
+    const student = await this.student.findOne({ where: { id } });
+    if (!student) {
+      throw new HttpException('该学生不存在', 400);
+    }
+    await this.student.save({ ...student, ...updateStudentDto });
+    return new Result({ success: true, message: '修改成功' });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  async remove(id: number) {
+    const student = await this.student.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+    if (!student) {
+      throw new HttpException('该学生不存在', 400);
+    }
+    return await this.student.manager.transaction(async () => {
+      await this.student.remove(student);
+      const user = await this.user.findOne({ where: { id: student.user?.id } });
+      await this.user.remove(user);
+      return new Result({ success: true, message: '删除成功' });
+    });
   }
 }

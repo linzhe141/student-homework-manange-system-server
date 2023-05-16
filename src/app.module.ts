@@ -5,10 +5,18 @@ import { DatabaseModule } from './common/database/database.module';
 import { UserModule } from './user/user.module';
 import { StudentModule } from './student/student.module';
 import { AuthModule } from './auth/auth.module';
-
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '@/common/guard/auth.guard';
 @Module({
   imports: [DatabaseModule, UserModule, StudentModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // 全局jwt认证guard
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

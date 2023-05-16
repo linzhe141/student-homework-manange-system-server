@@ -7,14 +7,20 @@ import {
   Param,
   Delete,
   Query,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('student')
+@ApiBearerAuth('access-token')
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
@@ -38,16 +44,22 @@ export class StudentController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '详情' })
+  @ApiParam({ name: 'id', description: '学生id', required: true })
   findOne(@Param('id') id: string) {
     return this.studentService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '修改' })
+  @ApiParam({ name: 'id', description: '学生id', required: true })
   update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
     return this.studentService.update(+id, updateStudentDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '删除' })
+  @ApiParam({ name: 'id', description: '学生id', required: true })
   remove(@Param('id') id: string) {
     return this.studentService.remove(+id);
   }
