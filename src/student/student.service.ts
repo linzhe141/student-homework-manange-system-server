@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Result } from '@/common/resutl/result';
 import { User } from '@/user/entities/user.entity';
 import { UserType } from '../enum/user';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 
 type QueryStudentDto = { studentNum: string; studentName: string };
 @Injectable()
@@ -18,18 +17,22 @@ export class StudentService {
   ) {}
   async create(createStudentDto: CreateStudentDto) {
     return await this.student.manager.transaction(async () => {
-      const { studentNum } = createStudentDto;
+      const { studentNum, studentName } = createStudentDto;
       const isExist = await this.student.findOne({ where: { studentNum } });
       if (isExist) {
         throw new HttpException('学号不可重复', 400);
       }
-      // ?TODO 只是为了有类型提示
-      await this.user.save<Partial<User>>({
-        username: studentNum,
-        password: studentNum,
-        type: UserType.STUDENT,
-      });
-      await this.student.save(createStudentDto);
+      const user = new User();
+      user.username = studentNum;
+      user.password = studentNum;
+      user.type = UserType.STUDENT;
+      const student = new Student();
+      student.studentName = studentName;
+      student.studentNum = studentNum;
+      student.user = user;
+      // 先建立一个user
+      await this.user.save(user);
+      await this.student.save(student);
       return new Result({ success: true, message: '学生新增成功' });
     });
   }

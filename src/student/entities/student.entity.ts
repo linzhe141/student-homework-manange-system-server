@@ -28,6 +28,6 @@ export class Student {
   update_time: Date;
 
   @OneToOne(() => User, (user) => user.student)
-  @JoinColumn()
+  @JoinColumn() // 作为外键?
   user: Relation<User>;
 }

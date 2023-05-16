@@ -30,6 +30,5 @@ export class User {
   update_time: Date;
 
   @OneToOne(() => Student, (student) => student.user)
-  @JoinColumn()
   student: Student;
 }
