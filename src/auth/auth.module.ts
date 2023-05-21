@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { secret, expiresIn } from '@/config/jwt.config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '../common/guard/auth.guard';
+import { StudentModule } from '@/student/student.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthGuard } from '../common/guard/auth.guard';
       signOptions: { expiresIn },
     }),
     UserModule,
+    StudentModule,
   ],
   controllers: [AuthController],
   providers: [

@@ -12,7 +12,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: '密码不能为空' })
   password: string;
 
-  @ApiProperty({ description: '类型 1学生', enum: UserType })
+  @ApiProperty({ description: '类型 1管理员 2 学生', enum: UserType })
   @IsEnum(UserType)
   @IsNotEmpty({ message: '类型不能为空' })
   type: number;

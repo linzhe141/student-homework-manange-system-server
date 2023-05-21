@@ -18,7 +18,12 @@ export class UserService {
 
   // 认证使用
   findOneByUserName(username: string) {
-    return this.user.findOne({ where: { username } });
+    return this.user.findOne({
+      where: { username },
+      relations: {
+        student: true,
+      },
+    });
   }
 
   async login({ username, password }: LoginUserDto) {
