@@ -35,11 +35,15 @@ export class StudentController {
   @ApiOperation({ summary: '查询' })
   @ApiQuery({ name: 'studentNum', description: '学号', required: false })
   @ApiQuery({ name: 'studentName', description: '姓名', required: false })
+  @ApiQuery({ name: 'currentPage', description: '当前页', required: false })
+  @ApiQuery({ name: 'pageSize', description: '每页数目', required: false })
   findAll(
     @Query('studentName') studentName: string,
     @Query('studentNum') studentNum: string,
+    @Query('currentPage') currentPage: number,
+    @Query('pageSize') pageSize: number,
   ) {
-    const query = { studentName, studentNum };
+    const query = { studentName, studentNum, currentPage, pageSize };
     return this.studentService.findAll(query);
   }
 

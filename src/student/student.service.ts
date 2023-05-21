@@ -8,7 +8,12 @@ import { Result } from '@/common/resutl/result';
 import { User } from '@/user/entities/user.entity';
 import { UserType } from '../enum/user';
 
-type QueryStudentDto = { studentNum: string; studentName: string };
+type QueryStudentDto = {
+  studentNum: string;
+  studentName: string;
+  currentPage: number;
+  pageSize: number;
+};
 @Injectable()
 export class StudentService {
   constructor(
@@ -46,14 +51,31 @@ export class StudentService {
   }
 
   async findAll(query: QueryStudentDto) {
-    const { studentNum = '', studentName = '' } = query;
-    const data = await this.student.find({
+    const {
+      studentNum = '',
+      studentName = '',
+      currentPage = 1,
+      pageSize = 10,
+    } = query;
+    const [data, total] = await this.student.findAndCount({
       where: {
         studentNum: Like(`%${studentNum}%`),
         studentName: Like(`%${studentName}%`),
       },
+      order: {
+        id: 'desc',
+      },
+      take: pageSize,
+      skip: (currentPage - 1) * pageSize,
     });
-    return new Result({ success: true, data, message: '' });
+    return new Result({
+      success: true,
+      data: {
+        data,
+        total,
+      },
+      message: '',
+    });
   }
 
   async findOne(id: number) {
