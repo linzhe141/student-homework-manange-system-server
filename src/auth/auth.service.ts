@@ -16,20 +16,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
   async login(loginUserDto: LoginUserDto) {
-    const { username, password } = loginUserDto;
+    const { username, password, type } = loginUserDto;
     const user = await this.userService.findOneByUserName(username);
     if (user?.password !== password) {
       throw new HttpException('用户名或密码错误', HttpStatus.BAD_REQUEST);
     }
     let userInfo = null;
-    if (loginUserDto.type === UserType.ADMIN) {
+    if (type === UserType.ADMIN) {
       userInfo = {
         type: UserType.ADMIN,
       };
     }
-    if (loginUserDto.type === UserType.STUDENT) {
-      console.log(user);
-      const { data } = await this.studentService.findOne(user?.student?.id);
+    if (type === UserType.STUDENT) {
+      const { data } = await this.studentService.findOne(user.student.id);
       userInfo = {
         type: UserType.STUDENT,
         studentName: data.studentName,
