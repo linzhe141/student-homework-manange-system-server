@@ -3,11 +3,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { Result } from '../common/resutl/result';
 import { LoginUserDto } from '../auth/dto/auth-user.dto';
 import { Student } from '@/student/entities/student.entity';
-
+type QueryUserDto = {
+  username: string;
+  type: number;
+  currentPage: number;
+  pageSize: number;
+};
 @Injectable()
 export class UserService {
   constructor(
@@ -44,12 +49,30 @@ export class UserService {
     return new Result({ success: true, message: '用户新增成功' });
   }
 
-  async findAll(query: { username: string }) {
-    const { username = '' } = query;
-    const data = await this.user.find({
-      where: { username: Like(`%${username}%`) },
+  async findAll(query: QueryUserDto) {
+    const { username = '', type = '', currentPage = 1, pageSize = 12 } = query;
+    const where: FindOptionsWhere<User> = {
+      username: Like(`%${username}%`),
+    };
+    if (type) {
+      where.type = type;
+    }
+    const [data, total] = await this.user.findAndCount({
+      where,
+      order: {
+        id: 'desc',
+      },
+      take: pageSize,
+      skip: (currentPage - 1) * pageSize,
     });
-    return new Result({ success: true, data, message: '' });
+    return new Result({
+      success: true,
+      data: {
+        data,
+        total,
+      },
+      message: '',
+    });
   }
 
   async findOneById(id: number) {

@@ -11,6 +11,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserType } from '../enum/user';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -34,7 +35,21 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: '查询' })
   @ApiQuery({ name: 'username', description: '用户名', required: false })
-  findAll(@Query() query: { username: string }) {
+  @ApiQuery({
+    name: 'type',
+    enum: UserType,
+    description: '类型 1 管理员 2 学生 ',
+    required: false,
+  })
+  @ApiQuery({ name: 'currentPage', description: '当前页', required: false })
+  @ApiQuery({ name: 'pageSize', description: '每页数目', required: false })
+  findAll(
+    @Query('username') username: string,
+    @Query('type') type: number,
+    @Query('currentPage') currentPage: number,
+    @Query('pageSize') pageSize: number,
+  ) {
+    const query = { username, currentPage, pageSize, type };
     return this.userService.findAll(query);
   }
 
