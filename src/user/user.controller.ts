@@ -74,4 +74,11 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @Patch(':id/updateAvatar')
+  @ApiOperation({ summary: '修改头像' })
+  @ApiParam({ name: 'id', description: '用户id', required: true })
+  updateAvatar(@Param('id') id: string, @Body() avatar: { avatarId: number }) {
+    return this.userService.updateAvatar(+id, avatar);
+  }
 }

@@ -11,7 +11,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @Public()
+  @Public() // 不需要authguard拦截
   @ApiOperation({ summary: '登录' })
   login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);

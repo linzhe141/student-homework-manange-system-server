@@ -23,6 +23,12 @@ export class User {
   @Column({ type: 'int' })
   type: number;
 
+  @Column({ type: 'int' })
+  avatarId: number;
+
+  @Column({ type: 'varchar' })
+  avatarImg: string;
+
   @CreateDateColumn()
   create_time: Date;
 

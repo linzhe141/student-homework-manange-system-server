@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { Result } from '../common/resutl/result';
-import { LoginUserDto } from '../auth/dto/auth-user.dto';
 import { Student } from '@/student/entities/student.entity';
+import { File } from '@/file/entities/file.entity';
 type QueryUserDto = {
   username: string;
   type: number;
@@ -19,6 +19,8 @@ export class UserService {
     // 注入 数据库操作Repo
     @InjectRepository(User) private readonly user: Repository<User>,
     @InjectRepository(Student) private readonly student: Repository<Student>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
   ) {}
 
   // 认证使用
@@ -29,14 +31,6 @@ export class UserService {
         student: true,
       },
     });
-  }
-
-  async login({ username, password }: LoginUserDto) {
-    const isExist = await this.user.findOne({ where: { username, password } });
-    if (!isExist) {
-      throw new HttpException('用户名或密码错误', 400);
-    }
-    return new Result({ success: true, message: '登录成功' });
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -115,5 +109,29 @@ export class UserService {
       await this.user.remove(data);
       return new Result({ success: true, message: '用户已删除' });
     });
+  }
+
+  async updateAvatar(id: number, avatar: { avatarId: number }) {
+    const data = await this.user.findOne({
+      where: { id },
+      relations: {
+        student: true,
+      },
+    });
+    if (!data) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
+    const fileItem = await this.fileRepository.findOne({
+      where: { id: avatar.avatarId },
+    });
+    if (!fileItem) {
+      throw new HttpException('头像文件不存在', HttpStatus.BAD_REQUEST);
+    }
+    await this.user.save({
+      ...data,
+      ...avatar,
+      avatarImg: fileItem.serverFileName,
+    });
+    return new Result({ success: true, message: '头像修改成功' });
   }
 }
