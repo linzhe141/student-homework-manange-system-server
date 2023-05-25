@@ -25,12 +25,14 @@ export class AuthService {
     if (type === UserType.ADMIN) {
       userInfo = {
         type: UserType.ADMIN,
+        avatarImg: user.avatarImg,
       };
     }
     if (type === UserType.STUDENT) {
       const { data } = await this.studentService.findOne(user.student.id);
       userInfo = {
         type: UserType.STUDENT,
+        avatarImg: user.avatarImg,
         studentName: data.studentName,
         studentNum: data.studentNum,
       };
