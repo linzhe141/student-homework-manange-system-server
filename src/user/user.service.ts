@@ -39,7 +39,13 @@ export class UserService {
     if (isExist) {
       throw new HttpException('用户名不可重复', 400);
     }
-    await this.user.save({ username, password, type });
+    await this.user.save({
+      username,
+      password,
+      type,
+      avatarId: 0,
+      avatarImg: '',
+    });
     return new Result({ success: true, message: '用户新增成功' });
   }
 
